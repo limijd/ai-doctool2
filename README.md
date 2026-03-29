@@ -9,40 +9,25 @@
 ## 工具链概览
 
 ```
-PDF 输入
-   │
-   ▼
-┌──────────────────┐
-│  aidoc_convert    │  PDF → Markdown（基于 Docling）
-│  代码/公式/表格   │  支持 OCR、GPU 加速
-└──────────────────┘
-   │
-   ▼
-┌──────────────────┐
-│  aidoc_strip      │  清理页眉页脚
-│  四层检测架构     │  统计 → 启发式 → LLM → 合并
-└──────────────────┘
-   │
-   ▼
-┌──────────────────┐
-│  aidoc_fix_       │  修复标题层级退化
-│  hierarchy        │  编号规则 + 区间归属 + LLM
-└──────────────────┘
-   │
-   ▼
-┌──────────────────┐
-│  aidoc_fix_       │  修复代码块边界
-│  codeblocks       │  正文/代码识别 + 边界修正
-└──────────────────┘
-   │
-   ▼
-┌──────────────────┐
-│  aidoc_index      │  生成 RAG 语义索引
-│  切片/摘要/关键字  │  JSON 结构化输出
-└──────────────────┘
-   │
-   ▼
-RAG-ready Markdown + JSON 索引
+PDF Input
+    |
+    v
+[1] aidoc_convert --------- PDF -> Markdown (Docling)
+    |                       OCR / table / formula / code
+    v
+[2] aidoc_strip ----------- Strip headers & footers
+    |                       statistics -> heuristics -> LLM -> merge
+    v
+[3] aidoc_fix_hierarchy --- Fix heading levels
+    |                       numbering rules + interval + LLM
+    v
+[4] aidoc_fix_codeblocks -- Fix code block boundaries
+    |                       prose/code detection + fence repair
+    v
+[5] aidoc_index ----------- Build RAG semantic index
+    |                       chunking / summary / keywords -> JSON
+    v
+RAG-ready Markdown + JSON Index
 ```
 
 每个工具**独立可用**，也可以按顺序串联使用。
@@ -399,35 +384,35 @@ pytest tests/ -v
 
 ```
 ai-doctool2/
-├── README.md                    # 本文件
-├── ARCHITECTURE.md              # 架构文档（AI 维护参考）
-├── aidoc.conf                   # LLM 配置（Ollama 默认）
-├── aidoc.openai.example.conf    # OpenAI 配置示例
-├── requirements.txt             # Python 依赖
+├── README.md                   README
+├── ARCHITECTURE.md             architecture doc (for AI maintenance)
+├── aidoc.conf                  LLM config (Ollama default)
+├── aidoc.openai.example.conf   OpenAI config example
+├── requirements.txt            Python dependencies
 ├── .gitignore
 │
-│  共享模块
-├── aidoc_llm.py                 # 统一 LLM 客户端
-├── aidoc_utils.py               # 通用工具函数
+│   shared modules
+├── aidoc_llm.py                unified LLM client
+├── aidoc_utils.py              common utilities
 │
-│  管线工具
-├── aidoc_convert.py             # [1] PDF → Markdown
-├── aidoc_strip.py               # [2] 页眉页脚剥离
-├── aidoc_fix_hierarchy.py       # [3] 标题层级修复
-├── aidoc_fix_codeblocks.py      # [4] 代码块边界修复
-├── aidoc_index.py               # [5] RAG 语义索引
+│   pipeline tools
+├── aidoc_convert.py            [1] PDF -> Markdown
+├── aidoc_strip.py              [2] strip headers & footers
+├── aidoc_fix_hierarchy.py      [3] fix heading hierarchy
+├── aidoc_fix_codeblocks.py     [4] fix code block boundaries
+├── aidoc_index.py              [5] RAG semantic index
 │
-│  测试
+│   tests
 └── tests/
-    ├── conftest.py              # 公共 fixtures + Mock LLM
-    ├── samples/                 # 手工构造的测试样本
-    ├── test_llm.py              # LLM 客户端测试
-    ├── test_utils.py            # 工具函数测试
-    ├── test_strip.py            # 页眉页脚剥离测试
-    ├── test_fix_hierarchy.py    # 标题层级修复测试
-    ├── test_fix_codeblocks.py   # 代码块修复测试
-    ├── test_index.py            # RAG 索引测试
-    └── test_integration.py      # 集成测试（需 Ollama）
+    ├── conftest.py             fixtures + mock LLM
+    ├── samples/                test sample markdowns
+    ├── test_llm.py             LLM client tests
+    ├── test_utils.py           utility tests
+    ├── test_strip.py           strip tests
+    ├── test_fix_hierarchy.py   hierarchy fixer tests
+    ├── test_fix_codeblocks.py  codeblock fixer tests
+    ├── test_index.py           indexer tests
+    └── test_integration.py     integration tests (need Ollama)
 ```
 
 ---
